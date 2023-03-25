@@ -1,14 +1,10 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class test5 {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         int firstDay = Integer.parseInt(in.nextLine());
-        List<Adress> vsedoma = new ArrayList<>();
+        Map<String, List<Integer>> vsedoma2 = new HashMap<>();
         List<Integer> result = new LinkedList<>();
         for (int j = 0; j < firstDay; j++) {
             String stroka = in.nextLine();
@@ -18,49 +14,29 @@ public class test5 {
                 int razmer = neameUlicaString.length();
                 Integer numb = Integer.parseInt(stroka.substring(razmer));
                 List<Integer> numbresDomsTemp = new ArrayList<>();
-                if (vsedoma.size() > 0) {
-                    for (int i = 0; i < vsedoma.size(); i++) {
-                        if (vsedoma.get(i).getName().equals(neameUlicaString)) {
-                            if (vsedoma.get(i).numbresDoms.contains(numb)) {
-                                break;
-                            }
-                            vsedoma.get(i).numbresDoms.add(numb);
-                            break;
-                        } else {
-                            numbresDomsTemp.add(numb);
-                            vsedoma.add(new Adress(neameUlicaString, numbresDomsTemp));
-                        }
-                    }
-                } else {
+                List<Integer> tempos = getValueMap(vsedoma2, neameUlicaString);
+                if (tempos == null) {
                     numbresDomsTemp.add(numb);
-                    vsedoma.add(new Adress(neameUlicaString, numbresDomsTemp));
+                    vsedoma2.put(neameUlicaString, numbresDomsTemp);
+                } else if (!tempos.contains(numb)) {
+                    vsedoma2.get(neameUlicaString).add(numb);
                 }
             } else {
                 List<Integer> numbresDomsTemp = new ArrayList<>();
-                if (vsedoma.size() > 0) {
-                    boolean ink = true;
-                    for (Adress adress : vsedoma) {
-                        if (adress.getName().equals(stroka)) {
-                            ink = false;
-                            Integer ishemDom = 1;
-                            do {
-                                if (adress.numbresDoms.contains(ishemDom)) {
-                                    ishemDom++;
-                                }
-                            }
-                            while (adress.numbresDoms.contains(ishemDom));
-                            adress.numbresDoms.add(ishemDom);
-                            break;
+                List<Integer> tempos = getValueMap(vsedoma2, stroka);
+                if (tempos == null) {
+                    numbresDomsTemp.add(1);
+                    vsedoma2.put(stroka, numbresDomsTemp);
+                } else {
+                    Integer ishemDom = 1;
+                    do {
+                        if (tempos.contains(ishemDom)) {
+                            ishemDom++;
                         }
                     }
-                    if (ink) {
-                        numbresDomsTemp.add(1);
-                        vsedoma.add(new Adress(stroka, numbresDomsTemp));
-
-                    }
-                } else {
-                    numbresDomsTemp.add(1);
-                    vsedoma.add(new Adress(stroka, numbresDomsTemp));
+                    while (tempos.contains(ishemDom));
+                    vsedoma2.get(stroka).add(ishemDom);
+                    result.add(ishemDom);
                 }
             }
         }
@@ -73,80 +49,47 @@ public class test5 {
                 int razmer = neameUlicaString.length();
                 Integer numb = Integer.parseInt(stroka.substring(razmer));
                 List<Integer> numbresDomsTemp = new ArrayList<>();
-                if (vsedoma.size() > 0) {
-                    for (int i = 0; i < vsedoma.size(); i++) {
-                        if (vsedoma.get(i).getName().equals(neameUlicaString)) {
-                            if (vsedoma.get(i).numbresDoms.contains(numb)) {
-                                break;
-                            }
-                            vsedoma.get(i).numbresDoms.add(numb);
-                            result.add(numb);
-                            break;
-                        } else {
-                            numbresDomsTemp.add(numb);
-                            vsedoma.add(new Adress(neameUlicaString, numbresDomsTemp));
-                            result.add(numb);
-                        }
-                    }
-                } else {
+                List<Integer> tempos = getValueMap(vsedoma2, neameUlicaString);
+                if (tempos == null) {
                     numbresDomsTemp.add(numb);
-                    vsedoma.add(new Adress(neameUlicaString, numbresDomsTemp));
+                    result.add(numb);
+                    vsedoma2.put(neameUlicaString, numbresDomsTemp);
+                } else if (!tempos.contains(numb)) {
+                    vsedoma2.get(neameUlicaString).add(numb);
                     result.add(numb);
                 }
             } else {
                 List<Integer> numbresDomsTemp = new ArrayList<>();
-                if (vsedoma.size() > 0) {
-                    boolean ink = true;
-                    for (Adress adress : vsedoma) {
-                        if (adress.getName().equals(stroka)) {
-                            ink = false;
-                            Integer ishemDom = 1;
-                            do {
-                                if (adress.numbresDoms.contains(ishemDom)) {
-                                    ishemDom++;
-                                }
-                            }
-                            while (adress.numbresDoms.contains(ishemDom));
-                            adress.numbresDoms.add(ishemDom);
-                            result.add(ishemDom);
-                            break;
+                List<Integer> tempos = getValueMap(vsedoma2, stroka);
+                if (tempos == null) {
+                    numbresDomsTemp.add(1);
+                    vsedoma2.put(stroka, numbresDomsTemp);
+                    result.add(1);
+                } else {
+                    Integer ishemDom = 1;
+                    do {
+                        if (tempos.contains(ishemDom)) {
+                            ishemDom++;
                         }
                     }
-                    if (ink) {
-                        numbresDomsTemp.add(1);
-                        vsedoma.add(new Adress(stroka, numbresDomsTemp));
-                        result.add(1);
-                    }
-                } else {
-                    numbresDomsTemp.add(1);
-                    vsedoma.add(new Adress(stroka, numbresDomsTemp));
-                    result.add(1);
+                    while (tempos.contains(ishemDom));
+                    vsedoma2.get(stroka).add(ishemDom);
+                    result.add(ishemDom);
                 }
             }
+
         }
-      result.forEach(System.out::println);
+              result.forEach(System.out::println);
+    }
+
+    public static <K, V> V getValueMap(Map<K, V> map, K key) {
+        return map.entrySet().stream()
+                .filter(entry -> key.equals(entry.getKey()))
+                .findFirst().map(Map.Entry::getValue)
+                .orElse(null);
     }
 }
 
-class Adress {
-    String name;
-    List<Integer> numbresDoms;
 
-    public Adress(String name, List<Integer> numbresDoms) {
-        this.name = name;
-        this.numbresDoms = numbresDoms;
-    }
 
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return "Adress{" +
-                "name='" + name + '\'' +
-                ", numbresDoms=" + numbresDoms +
-                '}';
-    }
-}
 
